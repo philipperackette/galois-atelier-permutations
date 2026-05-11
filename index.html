@@ -1,0 +1,1102 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Atelier pédagogique des permutations</title>
+  <style>
+    :root {
+      --bg: #f6f7fb;
+      --panel: #ffffff;
+      --text: #182033;
+      --muted: #667085;
+      --primary: #2563eb;
+      --primary-soft: #dbeafe;
+      --green: #16a34a;
+      --red: #dc2626;
+      --orange: #ea580c;
+      --border: #d0d5dd;
+      --shadow: 0 18px 45px rgba(15, 23, 42, 0.08);
+      --radius: 18px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top left, #e0edff 0, transparent 36%), var(--bg);
+      color: var(--text);
+    }
+
+    header {
+      padding: 28px 22px 18px;
+      max-width: 1220px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      letter-spacing: -0.045em;
+      line-height: 1.02;
+    }
+
+    .subtitle {
+      margin: 0;
+      color: var(--muted);
+      max-width: 850px;
+      font-size: 1.05rem;
+      line-height: 1.55;
+    }
+
+    main {
+      max-width: 1220px;
+      margin: 0 auto;
+      padding: 16px 22px 38px;
+      display: grid;
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: 20px;
+    }
+
+    @media (max-width: 950px) {
+      main { grid-template-columns: 1fr; }
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.9);
+      border: 1px solid rgba(208, 213, 221, 0.8);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 20px;
+      backdrop-filter: blur(8px);
+    }
+
+    .card h2 {
+      margin: 0 0 14px;
+      font-size: 1.22rem;
+      letter-spacing: -0.02em;
+    }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+
+    label {
+      font-weight: 650;
+      color: #344054;
+    }
+
+    input[type="number"], select {
+      height: 38px;
+      padding: 0 10px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font-size: 1rem;
+      background: white;
+    }
+
+    button {
+      border: 0;
+      border-radius: 999px;
+      padding: 10px 14px;
+      font-weight: 750;
+      cursor: pointer;
+      background: var(--primary);
+      color: white;
+      transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.12s ease;
+      box-shadow: 0 8px 18px rgba(37, 99, 235, 0.22);
+    }
+
+    button:hover { transform: translateY(-1px); }
+    button.secondary {
+      background: #eef2ff;
+      color: #3730a3;
+      box-shadow: none;
+    }
+    button.ghost {
+      background: #f2f4f7;
+      color: #344054;
+      box-shadow: none;
+    }
+    button.warn {
+      background: #fff7ed;
+      color: #c2410c;
+      box-shadow: none;
+    }
+
+    .hint {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-left: 5px solid var(--primary);
+      padding: 12px 14px;
+      border-radius: 12px;
+      color: #475467;
+      line-height: 1.48;
+      margin: 10px 0 16px;
+    }
+
+    .workspace {
+      position: relative;
+      min-height: 380px;
+      background: linear-gradient(180deg, #ffffff, #f8fafc);
+      border: 1px solid #e4e7ec;
+      border-radius: 18px;
+      overflow: hidden;
+      padding: 16px 10px;
+    }
+
+    svg {
+      width: 100%;
+      height: 360px;
+      display: block;
+      user-select: none;
+      touch-action: none;
+    }
+
+    .node circle {
+      fill: white;
+      stroke: #98a2b3;
+      stroke-width: 2;
+      transition: all 0.15s ease;
+      filter: drop-shadow(0 5px 8px rgba(15, 23, 42, 0.09));
+    }
+
+    .node text {
+      font-size: 17px;
+      font-weight: 800;
+      fill: #182033;
+      pointer-events: none;
+    }
+
+    .node.top circle { fill: #eff6ff; stroke: #60a5fa; }
+    .node.bottom circle { fill: #f9fafb; }
+    .node.selected circle { fill: #2563eb; stroke: #1d4ed8; }
+    .node.selected text { fill: white; }
+    .node.targetable circle { stroke: #16a34a; stroke-width: 3; }
+
+    .arrow-line {
+      stroke: #2563eb;
+      stroke-width: 3.2;
+      fill: none;
+      opacity: 0.86;
+    }
+
+    .arrow-line.pending {
+      stroke: #94a3b8;
+      stroke-dasharray: 7 7;
+      opacity: 0.8;
+    }
+
+    .cycle-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 10px;
+      background: var(--primary-soft);
+      color: #1e3a8a;
+      border-radius: 999px;
+      font-weight: 800;
+      margin: 3px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    }
+
+    .result-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+    }
+
+    .result-box {
+      border: 1px solid #e4e7ec;
+      border-radius: 16px;
+      padding: 15px;
+      background: #fff;
+    }
+
+    .result-title {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 8px;
+      font-weight: 850;
+      color: #344054;
+    }
+
+    .math {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 1.05rem;
+      line-height: 1.5;
+      overflow-wrap: anywhere;
+    }
+
+    .big-sign {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 48px;
+      height: 36px;
+      padding: 0 12px;
+      border-radius: 999px;
+      font-weight: 900;
+      color: white;
+      font-size: 1.05rem;
+    }
+    .positive { background: var(--green); }
+    .negative { background: var(--red); }
+
+    .explanation {
+      color: #475467;
+      line-height: 1.55;
+      margin: 7px 0 0;
+    }
+
+    .two-line {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      border: 1px solid #e4e7ec;
+      border-radius: 14px;
+      overflow: hidden;
+      margin-top: 10px;
+    }
+
+    .two-line div {
+      padding: 8px 10px;
+      text-align: center;
+      font-weight: 800;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      border-bottom: 1px solid #e4e7ec;
+    }
+
+    .two-line div:nth-child(odd) { background: #eff6ff; }
+    .two-line div:nth-last-child(-n+2) { border-bottom: none; }
+
+    .mapping-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 8px;
+      overflow: hidden;
+      border-radius: 14px;
+      font-size: 0.95rem;
+    }
+
+    .mapping-table th, .mapping-table td {
+      border: 1px solid #e4e7ec;
+      padding: 8px;
+      text-align: center;
+    }
+
+    .mapping-table th { background: #f8fafc; color: #475467; }
+
+    .step-list {
+      margin: 8px 0 0;
+      padding-left: 20px;
+      color: #475467;
+      line-height: 1.55;
+    }
+
+    .step-list li { margin: 5px 0; }
+
+    .badge {
+      display: inline-block;
+      background: #f2f4f7;
+      border: 1px solid #e4e7ec;
+      color: #475467;
+      border-radius: 999px;
+      padding: 4px 8px;
+      font-size: 0.82rem;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .small-muted {
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .examples {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .footer-note {
+      max-width: 1220px;
+      margin: -18px auto 36px;
+      padding: 0 22px;
+      color: #667085;
+      font-size: 0.94rem;
+      line-height: 1.5;
+    }
+  
+
+    .transpo-visual {
+      margin-top: 12px;
+      border: 1px solid #e4e7ec;
+      border-radius: 16px;
+      background: linear-gradient(180deg, #fff, #f8fafc);
+      padding: 12px;
+    }
+
+    .transpo-controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+
+    .mini-btn {
+      padding: 7px 10px;
+      font-size: 0.88rem;
+      box-shadow: none;
+    }
+
+    .transpo-stage {
+      width: 100%;
+      height: 170px;
+      display: block;
+      background: #ffffff;
+      border: 1px solid #eef2f7;
+      border-radius: 14px;
+    }
+
+    .mini-point circle {
+      fill: #f8fafc;
+      stroke: #98a2b3;
+      stroke-width: 2;
+    }
+
+    .mini-point.active circle {
+      fill: #fff7ed;
+      stroke: #ea580c;
+      stroke-width: 3;
+    }
+
+    .mini-point text {
+      font-size: 14px;
+      font-weight: 850;
+      fill: #182033;
+      dominant-baseline: central;
+      text-anchor: middle;
+    }
+
+    .swap-arc {
+      fill: none;
+      stroke: #ea580c;
+      stroke-width: 3;
+      marker-end: url(#miniArrow);
+    }
+
+    .swap-arc.back {
+      marker-end: none;
+      marker-start: url(#miniArrow);
+      opacity: 0.7;
+    }
+
+    .composition-strip {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 10px;
+    }
+
+    .transpo-chip {
+      border: 1px solid #fed7aa;
+      background: #fff7ed;
+      color: #9a3412;
+      border-radius: 999px;
+      padding: 6px 9px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-weight: 850;
+      cursor: pointer;
+    }
+
+    .transpo-chip.current {
+      background: #ea580c;
+      color: white;
+      border-color: #ea580c;
+    }
+
+    .mini-mapping {
+      margin-top: 8px;
+      color: #475467;
+      font-size: 0.92rem;
+      line-height: 1.45;
+    }
+
+    .sequence-title {
+      margin-top: 14px;
+      font-weight: 850;
+      color: #344054;
+    }
+
+    .sequence-list {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+      margin-top: 8px;
+    }
+
+    .sequence-card {
+      border: 1px solid #e4e7ec;
+      border-radius: 14px;
+      background: #ffffff;
+      padding: 14px;
+    }
+
+    .sequence-head {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+      color: #344054;
+      font-weight: 800;
+    }
+
+    .sequence-swap {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 999px;
+      padding: 5px 9px;
+      background: #fff7ed;
+      border: 1px solid #fed7aa;
+      color: #9a3412;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-weight: 900;
+    }
+
+    .sequence-swap.final {
+      background: #dcfce7;
+      border-color: #bbf7d0;
+      color: #166534;
+    }
+
+    .sequence-svg {
+      width: 100%;
+      height: 125px;
+      display: block;
+      border-radius: 12px;
+      background: #f8fafc;
+      border: 1px solid #eef2f7;
+    }
+
+    .state-line {
+      margin-top: 7px;
+      color: #475467;
+      font-size: 0.91rem;
+      line-height: 1.4;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Atelier des permutations</h1>
+    <p class="subtitle">
+      Construis graphiquement une permutation de {1, …, n}. Clique sur un point du haut, puis sur son image en bas. L'application calcule automatiquement l'écriture à deux lignes, la décomposition en cycles disjoints, une décomposition en transpositions et la signature.
+    </p>
+  </header>
+
+  <main>
+    <section class="card">
+      <h2>1. Construire la permutation</h2>
+      <div class="controls">
+        <label for="nInput">Taille n</label>
+        <input id="nInput" type="number" min="2" max="12" value="6" />
+        <button id="applyN">Appliquer</button>
+        <button id="identityBtn" class="secondary">Identité</button>
+        <button id="randomBtn" class="secondary">Permutation aléatoire</button>
+        <button id="clearBtn" class="ghost">Effacer</button>
+      </div>
+
+      <div class="hint" id="instruction">
+        Étape 1 : clique sur un nombre de la ligne du haut. Ce nombre sera l'antécédent i.
+      </div>
+
+      <div class="workspace">
+        <svg id="svg" viewBox="0 0 900 360" aria-label="Construction graphique de la permutation">
+          <defs>
+            <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="#2563eb"></path>
+            </marker>
+            <marker id="arrowPending" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="#94a3b8"></path>
+            </marker>
+          </defs>
+          <g id="arrows"></g>
+          <g id="nodes"></g>
+        </svg>
+      </div>
+
+      <div class="examples">
+        <span class="badge">Astuce : reclique sur un antécédent pour changer son image.</span>
+        <span class="badge">Une permutation est complète quand chaque point du bas est utilisé une fois.</span>
+      </div>
+    </section>
+
+    <aside class="card">
+      <h2>2. Lire les résultats</h2>
+      <div class="result-grid">
+        <div class="result-box">
+          <div class="result-title">Écriture à deux lignes <span class="badge" id="statusBadge">incomplète</span></div>
+          <div class="math" id="twoLineText">σ = —</div>
+          <div id="twoLineGrid"></div>
+          <p class="explanation">La première ligne contient les antécédents. La seconde ligne contient leurs images par σ.</p>
+        </div>
+
+        <div class="result-box">
+          <div class="result-title">Cycles disjoints <span class="badge">forme canonique</span></div>
+          <div class="math" id="cyclesText">—</div>
+          <p class="explanation" id="cyclesExplain">Les cycles apparaîtront quand la permutation sera complète.</p>
+        </div>
+
+        <div class="result-box">
+          <div class="result-title">Décomposition en transpositions</div>
+          <div class="math" id="transpositionsText">—</div>
+          <p class="explanation" id="transpositionsExplain">Un cycle (a₁ a₂ … aₖ) peut s'écrire (a₁ aₖ)…(a₁ a₃)(a₁ a₂). Chaque facteur est une transposition.</p>
+          <div class="transpo-visual" id="transpoVisual">
+            <div class="composition-strip" id="transpoStrip"></div>
+            <div class="mini-mapping" id="transpoMiniMapping">La visualisation apparaîtra quand la permutation sera complète.</div>
+            <div class="sequence-title">Séquence complète de composition</div>
+            <div class="sequence-list" id="transpoSequence"></div>
+          </div>
+        </div>
+
+        <div class="result-box">
+          <div class="result-title">Signature</div>
+          <div class="math" id="signatureText">—</div>
+          <p class="explanation" id="signatureExplain">La signature vaut +1 si le nombre de transpositions est pair, -1 s'il est impair.</p>
+        </div>
+
+        <div class="result-box">
+          <div class="result-title">Lecture pédagogique</div>
+          <ol class="step-list" id="pedagogyList">
+            <li>Choisis une image pour chaque nombre du haut.</li>
+            <li>Quand toutes les images sont différentes, tu obtiens une vraie permutation.</li>
+            <li>Les cycles suivent les flèches jusqu'au retour au point de départ.</li>
+          </ol>
+        </div>
+      </div>
+    </aside>
+  </main>
+
+  <p class="footer-note">
+    Convention utilisée : les cycles de longueur 1 ne sont pas affichés dans la décomposition principale, sauf pour l'identité. Les transpositions sont écrites dans un ordre qui reproduit les cycles lorsqu'on compose de droite à gauche, convention usuelle en algèbre.
+  </p>
+
+  <script>
+    let n = 6;
+    let perm = Array(n).fill(null); // perm[i] = image de i+1, valeur entre 1 et n
+    let selectedTop = null;
+    let currentTranspoStep = 0;
+
+    const svg = document.getElementById('svg');
+    const arrowsG = document.getElementById('arrows');
+    const nodesG = document.getElementById('nodes');
+    const instruction = document.getElementById('instruction');
+
+    const nInput = document.getElementById('nInput');
+    const applyN = document.getElementById('applyN');
+    const identityBtn = document.getElementById('identityBtn');
+    const randomBtn = document.getElementById('randomBtn');
+    const clearBtn = document.getElementById('clearBtn');
+
+    const statusBadge = document.getElementById('statusBadge');
+    const twoLineText = document.getElementById('twoLineText');
+    const twoLineGrid = document.getElementById('twoLineGrid');
+    const cyclesText = document.getElementById('cyclesText');
+    const cyclesExplain = document.getElementById('cyclesExplain');
+    const transpositionsText = document.getElementById('transpositionsText');
+    const transpositionsExplain = document.getElementById('transpositionsExplain');
+    const signatureText = document.getElementById('signatureText');
+    const signatureExplain = document.getElementById('signatureExplain');
+    const pedagogyList = document.getElementById('pedagogyList');
+    const transpoStrip = document.getElementById('transpoStrip');
+    const transpoMiniMapping = document.getElementById('transpoMiniMapping');
+    const transpoSequence = document.getElementById('transpoSequence');
+
+    function xFor(index) {
+      if (n === 1) return 450;
+      const margin = 65;
+      return margin + (index - 1) * ((900 - 2 * margin) / (n - 1));
+    }
+
+    function topY() { return 85; }
+    function bottomY() { return 275; }
+
+    function isCompletePermutation() {
+      if (perm.some(v => v === null)) return false;
+      return new Set(perm).size === n;
+    }
+
+    function usedBottomValues() {
+      return new Set(perm.filter(v => v !== null));
+    }
+
+    function makePath(x1, y1, x2, y2) {
+      const dy = y2 - y1;
+      const c1y = y1 + dy * 0.34;
+      const c2y = y1 + dy * 0.66;
+      const bend = (x2 - x1) * 0.08;
+      return `M ${x1} ${y1 + 24} C ${x1 + bend} ${c1y}, ${x2 - bend} ${c2y}, ${x2} ${y2 - 28}`;
+    }
+
+    function render() {
+      arrowsG.innerHTML = '';
+      nodesG.innerHTML = '';
+
+      for (let i = 1; i <= n; i++) {
+        const image = perm[i - 1];
+        if (image !== null) {
+          const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+          path.setAttribute('d', makePath(xFor(i), topY(), xFor(image), bottomY()));
+          path.setAttribute('class', 'arrow-line');
+          path.setAttribute('marker-end', 'url(#arrow)');
+          arrowsG.appendChild(path);
+        }
+      }
+
+      for (let i = 1; i <= n; i++) {
+        drawNode(i, xFor(i), topY(), 'top');
+      }
+      for (let i = 1; i <= n; i++) {
+        drawNode(i, xFor(i), bottomY(), 'bottom');
+      }
+
+      updateInstruction();
+      updateResults();
+    }
+
+    function drawNode(value, x, y, row) {
+      const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+      g.setAttribute('class', `node ${row}`);
+      g.setAttribute('transform', `translate(${x}, ${y})`);
+      g.style.cursor = 'pointer';
+
+      if (row === 'top' && selectedTop === value) g.classList.add('selected');
+      if (row === 'bottom' && selectedTop !== null) {
+        const used = usedBottomValues();
+        const currentImage = perm[selectedTop - 1];
+        if (!used.has(value) || currentImage === value) g.classList.add('targetable');
+      }
+
+      const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      circle.setAttribute('r', 25);
+      const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      text.setAttribute('text-anchor', 'middle');
+      text.setAttribute('dominant-baseline', 'central');
+      text.textContent = value;
+
+      g.appendChild(circle);
+      g.appendChild(text);
+      g.addEventListener('click', () => {
+        if (row === 'top') selectTop(value);
+        else selectBottom(value);
+      });
+      nodesG.appendChild(g);
+    }
+
+    function selectTop(value) {
+      selectedTop = selectedTop === value ? null : value;
+      render();
+    }
+
+    function selectBottom(value) {
+      if (selectedTop === null) return;
+      const used = usedBottomValues();
+      const previousImage = perm[selectedTop - 1];
+      if (used.has(value) && previousImage !== value) {
+        instruction.innerHTML = `Le nombre ${value} est déjà utilisé comme image. Dans une permutation, chaque image doit être utilisée une seule fois.`;
+        return;
+      }
+      perm[selectedTop - 1] = value;
+      const next = perm.findIndex(v => v === null);
+      selectedTop = next === -1 ? null : next + 1;
+      render();
+    }
+
+    function updateInstruction() {
+      if (selectedTop === null) {
+        if (isCompletePermutation()) {
+          instruction.innerHTML = 'La permutation est complète. Tu peux maintenant lire les cycles, les transpositions et la signature.';
+        } else {
+          instruction.innerHTML = 'Clique sur un nombre de la ligne du haut pour choisir son image.';
+        }
+      } else {
+        const old = perm[selectedTop - 1];
+        instruction.innerHTML = old === null
+          ? `Choisis maintenant l'image de ${selectedTop} dans la ligne du bas.`
+          : `Tu modifies l'image de ${selectedTop}. Image actuelle : ${old}. Choisis une nouvelle image libre.`;
+      }
+    }
+
+    function permutationToTwoLine() {
+      const top = Array.from({ length: n }, (_, i) => i + 1).join('  ');
+      const bottom = perm.map(v => v === null ? '·' : v).join('  ');
+      return `σ = [ ${top} ; ${bottom} ]`;
+    }
+
+    function cyclesOfPermutation() {
+      const visited = Array(n + 1).fill(false);
+      const cycles = [];
+      for (let start = 1; start <= n; start++) {
+        if (!visited[start]) {
+          const cycle = [];
+          let x = start;
+          while (!visited[x]) {
+            visited[x] = true;
+            cycle.push(x);
+            x = perm[x - 1];
+          }
+          cycles.push(cycle);
+        }
+      }
+      return cycles;
+    }
+
+    function formatCycle(cycle) {
+      return '(' + cycle.join(' ') + ')';
+    }
+
+    function formatCycles(cycles, includeFixed = false) {
+      const filtered = includeFixed ? cycles : cycles.filter(c => c.length > 1);
+      if (filtered.length === 0) return 'id';
+      return filtered.map(formatCycle).join(' ');
+    }
+
+    function transpositionsFromCycles(cycles) {
+      const transpositions = [];
+      for (const cycle of cycles) {
+        if (cycle.length <= 1) continue;
+        const a1 = cycle[0];
+        for (let j = cycle.length - 1; j >= 1; j--) {
+          transpositions.push([a1, cycle[j]]);
+        }
+      }
+      return transpositions;
+    }
+
+    function countInversions() {
+      let inv = 0;
+      for (let i = 0; i < n; i++) {
+        for (let j = i + 1; j < n; j++) {
+          if (perm[i] > perm[j]) inv++;
+        }
+      }
+      return inv;
+    }
+
+    function updateResults() {
+      const complete = isCompletePermutation();
+      statusBadge.textContent = complete ? 'permutation complète' : 'incomplète';
+      statusBadge.style.background = complete ? '#dcfce7' : '#f2f4f7';
+      statusBadge.style.color = complete ? '#166534' : '#475467';
+
+      twoLineText.textContent = permutationToTwoLine();
+      renderTwoLineGrid();
+
+      if (!complete) {
+        cyclesText.textContent = '—';
+        cyclesExplain.textContent = 'Les cycles apparaîtront quand chaque antécédent aura une image, et quand les images seront toutes distinctes.';
+        transpositionsText.textContent = '—';
+        transpositionsExplain.textContent = 'La décomposition en transpositions nécessite une vraie permutation complète.';
+        signatureText.textContent = '—';
+        signatureExplain.textContent = 'La signature sera calculée dès que la permutation sera complète.';
+        renderTranspositionVisual([]);
+        pedagogyList.innerHTML = `
+          <li>Il reste ${perm.filter(v => v === null).length} image(s) à choisir.</li>
+          <li>Les images déjà utilisées sont : ${Array.from(usedBottomValues()).sort((a,b)=>a-b).join(', ') || 'aucune'}.</li>
+          <li>Pour terminer, chaque nombre de la ligne du bas doit recevoir exactement une flèche.</li>
+        `;
+        return;
+      }
+
+      const cycles = cyclesOfPermutation();
+      const nonTrivialCycles = cycles.filter(c => c.length > 1);
+      const transpositions = transpositionsFromCycles(cycles);
+      const inversions = countInversions();
+      const signature = transpositions.length % 2 === 0 ? 1 : -1;
+
+      cyclesText.innerHTML = formatCycles(cycles)
+        .split(' ')
+        .map(c => c === 'id' ? '<span class="cycle-chip">id</span>' : `<span class="cycle-chip">${c}</span>`)
+        .join(' ');
+
+      if (nonTrivialCycles.length === 0) {
+        cyclesExplain.textContent = 'Tous les points sont fixes : σ est l’identité.';
+      } else {
+        cyclesExplain.textContent = `On lit les cycles en suivant les flèches : par exemple, dans un cycle, chaque nombre est envoyé sur le suivant, et le dernier revient au premier.`;
+      }
+
+      if (transpositions.length === 0) {
+        transpositionsText.textContent = 'id';
+      } else {
+        transpositionsText.textContent = transpositions.map(t => `(${t[0]} ${t[1]})`).join(' ');
+      }
+
+      const lengths = nonTrivialCycles.map(c => `${formatCycle(c)} donne ${c.length - 1} transposition(s)`).join(' ; ');
+      transpositionsExplain.textContent = lengths
+        ? `${lengths}. Au total : ${transpositions.length} transposition(s).`
+        : 'L’identité ne nécessite aucune transposition.';
+
+      signatureText.innerHTML = `<span class="big-sign ${signature === 1 ? 'positive' : 'negative'}">${signature === 1 ? '+1' : '-1'}</span> &nbsp; car ${transpositions.length} transposition(s) = ${transpositions.length % 2 === 0 ? 'nombre pair' : 'nombre impair'}.`;
+      signatureExplain.textContent = `Vérification par les inversions : la liste des images contient ${inversions} inversion(s), donc (-1)^${inversions} = ${inversions % 2 === 0 ? '+1' : '-1'}.`;
+      renderTranspositionVisual(transpositions);
+
+      const fixed = cycles.filter(c => c.length === 1).map(c => c[0]);
+      pedagogyList.innerHTML = `
+        <li>La permutation envoie ${Array.from({length:n},(_,i)=>`${i+1}↦${perm[i]}`).join(', ')}.</li>
+        <li>Décomposition en cycles disjoints : ${formatCycles(cycles)}.</li>
+        <li>Les points fixes ${fixed.length ? fixed.join(', ') : 'sont absents'} ${fixed.length ? 'ne sont généralement pas écrits dans la notation cyclique.' : ''}</li>
+        <li>La signature indique si la permutation est paire ou impaire : ici elle est ${signature === 1 ? 'paire' : 'impaire'}.</li>
+      `;
+    }
+
+    function identityArray() {
+      return Array.from({ length: n }, (_, i) => i + 1);
+    }
+
+    function applySwapToArray(arr, swap) {
+      const [a, b] = swap;
+      return arr.map(v => v === a ? b : v === b ? a : v);
+    }
+
+    function arrayMappingText(arr) {
+      return Array.from({ length: n }, (_, i) => `${i + 1}↦${arr[i]}`).join(', ');
+    }
+
+    function renderTranspositionVisual(transpositions) {
+      // Sécurité : cette visualisation ne doit jamais bloquer le reste de l'application.
+      if (!transpoStrip || !transpoMiniMapping) return;
+
+      transpoStrip.innerHTML = '';
+      if (transpoSequence) transpoSequence.innerHTML = '';
+
+      if (!transpositions.length) {
+        currentTranspoStep = 0;
+        transpoMiniMapping.textContent = isCompletePermutation()
+          ? 'La permutation est l’identité : rien ne bouge, donc aucune transposition n’est nécessaire.'
+          : 'La visualisation apparaîtra quand la permutation sera complète.';
+        if (transpoSequence && isCompletePermutation()) {
+          transpoSequence.appendChild(makeSequenceCard(0, null, identityArray(), identityArray(), true));
+        }
+        return;
+      }
+
+      currentTranspoStep = Math.max(0, Math.min(currentTranspoStep, transpositions.length - 1));
+
+      // La formule affichée est, par exemple, (1 4)(1 5)(1 2)(3 6).
+      // Avec la convention usuelle, on applique d'abord le facteur le plus à droite.
+      const applicationOrder = [...transpositions].reverse();
+
+      let before = identityArray();
+      for (let k = 0; k < applicationOrder.length; k++) {
+        if (transpositions.length - 1 - k === currentTranspoStep) break;
+        before = applySwapToArray(before, applicationOrder[k]);
+      }
+
+      const currentSwap = transpositions[currentTranspoStep];
+      const after = applySwapToArray(before, currentSwap);
+
+      // Le facteur sélectionné est seulement mis en évidence dans la liste compacte.
+
+      transpositions.forEach((t, index) => {
+        const chip = document.createElement('button');
+        chip.className = 'transpo-chip' + (index === currentTranspoStep ? ' current' : '');
+        chip.textContent = `(${t[0]} ${t[1]})`;
+        chip.title = `Mettre en évidence ce facteur dans la liste`;
+        chip.addEventListener('click', () => {
+          currentTranspoStep = index;
+          render();
+        });
+        transpoStrip.appendChild(chip);
+      });
+
+      transpoMiniMapping.innerHTML = `
+        La ligne de boutons rappelle la décomposition compacte. La séquence ci-dessous donne la composition complète dans l'ordre réel d'application : <strong>on part de l'identité et on applique d'abord la transposition la plus à droite</strong>.
+      `;
+
+      if (transpoSequence) {
+        let state = identityArray();
+        transpoSequence.appendChild(makeSequenceCard(0, null, identityArray(), state, false));
+        applicationOrder.forEach((swap, k) => {
+          const prev = [...state];
+          state = applySwapToArray(state, swap);
+          const isLast = k === applicationOrder.length - 1;
+          transpoSequence.appendChild(makeSequenceCard(k + 1, swap, prev, state, isLast));
+        });
+      }
+    }
+
+    function miniX(index) {
+      if (n === 1) return 420;
+      const marginLeft = 105;
+      const marginRight = 45;
+      return marginLeft + (index - 1) * ((760 - marginLeft - marginRight) / (n - 1));
+    }
+
+    function makeSequenceCard(step, swap, before, after, isFinal) {
+      const card = document.createElement('div');
+      card.className = 'sequence-card';
+
+      const head = document.createElement('div');
+      head.className = 'sequence-head';
+      if (step === 0) {
+        head.innerHTML = `<span class="sequence-swap">départ</span> identité`;
+      } else {
+        head.innerHTML = `<span class="sequence-swap${isFinal ? ' final' : ''}">étape ${step}</span> appliquer (${swap[0]} ${swap[1]}) : échange ${swap[0]} ↔ ${swap[1]}`;
+      }
+      card.appendChild(head);
+
+      const svgLocal = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      svgLocal.setAttribute('class', 'sequence-svg');
+      svgLocal.setAttribute('viewBox', '0 0 760 125');
+      drawSequenceState(svgLocal, before, after, swap);
+      card.appendChild(svgLocal);
+
+      const line = document.createElement('div');
+      line.className = 'state-line';
+      if (step === 0) {
+        line.innerHTML = `État : <strong>${arrayMappingText(after)}</strong>`;
+      } else {
+        line.innerHTML = `Avant : ${arrayMappingText(before)}<br>Après : <strong>${arrayMappingText(after)}</strong>`;
+      }
+      card.appendChild(line);
+      return card;
+    }
+
+    function drawSequenceState(svgLocal, before, after, swap) {
+      const yTop = 42;
+      const yBottom = 86;
+
+      const topLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      topLabel.setAttribute('x', '18');
+      topLabel.setAttribute('y', yTop);
+      topLabel.setAttribute('font-size', '11');
+      topLabel.setAttribute('font-weight', '800');
+      topLabel.setAttribute('fill', '#98a2b3');
+      topLabel.textContent = 'positions';
+      svgLocal.appendChild(topLabel);
+
+      const bottomLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      bottomLabel.setAttribute('x', '18');
+      bottomLabel.setAttribute('y', yBottom);
+      bottomLabel.setAttribute('font-size', '11');
+      bottomLabel.setAttribute('font-weight', '800');
+      bottomLabel.setAttribute('fill', '#98a2b3');
+      bottomLabel.textContent = 'valeurs';
+      svgLocal.appendChild(bottomLabel);
+
+      for (let i = 1; i <= n; i++) {
+        const x = miniX(i);
+        const bottomActive = swap && (before[i - 1] === swap[0] || before[i - 1] === swap[1] || after[i - 1] === swap[0] || after[i - 1] === swap[1]);
+
+        const top = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        top.setAttribute('x', x);
+        top.setAttribute('y', yTop);
+        top.setAttribute('text-anchor', 'middle');
+        top.setAttribute('font-size', '14');
+        top.setAttribute('font-weight', '700');
+        top.setAttribute('fill', '#475467');
+        top.textContent = i;
+        svgLocal.appendChild(top);
+
+        const arrow = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        arrow.setAttribute('x', x);
+        arrow.setAttribute('y', 64);
+        arrow.setAttribute('text-anchor', 'middle');
+        arrow.setAttribute('font-size', '13');
+        arrow.setAttribute('fill', '#98a2b3');
+        arrow.textContent = '↓';
+        svgLocal.appendChild(arrow);
+
+        const bottom = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        bottom.setAttribute('x', x);
+        bottom.setAttribute('y', yBottom);
+        bottom.setAttribute('text-anchor', 'middle');
+        bottom.setAttribute('font-size', '14');
+        bottom.setAttribute('font-weight', bottomActive ? '900' : '700');
+        bottom.setAttribute('fill', bottomActive ? '#ea580c' : '#182033');
+        bottom.textContent = after[i - 1];
+        svgLocal.appendChild(bottom);
+      }
+
+      if (swap) {
+        const info = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        info.setAttribute('x', '18');
+        info.setAttribute('y', '20');
+        info.setAttribute('font-size', '12');
+        info.setAttribute('font-weight', '800');
+        info.setAttribute('fill', '#9a3412');
+        info.textContent = `échange des valeurs ${swap[0]} ↔ ${swap[1]}`;
+        svgLocal.appendChild(info);
+      }
+    }
+
+    function renderTwoLineGrid() {
+      let html = '<table class="mapping-table"><tr>';
+      for (let i = 1; i <= n; i++) html += `<th>${i}</th>`;
+      html += '</tr><tr>';
+      for (let i = 0; i < n; i++) html += `<td>${perm[i] === null ? '·' : perm[i]}</td>`;
+      html += '</tr></table>';
+      twoLineGrid.innerHTML = html;
+    }
+
+    function setN(newN) {
+      n = Math.max(2, Math.min(12, Number(newN) || 6));
+      nInput.value = n;
+      perm = Array(n).fill(null);
+      selectedTop = null;
+      render();
+    }
+
+    function setIdentity() {
+      perm = Array.from({ length: n }, (_, i) => i + 1);
+      selectedTop = null;
+      render();
+    }
+
+    function setRandomPermutation() {
+      const arr = Array.from({ length: n }, (_, i) => i + 1);
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      perm = arr;
+      selectedTop = null;
+      render();
+    }
+
+    function clearPermutation() {
+      perm = Array(n).fill(null);
+      selectedTop = null;
+      render();
+    }
+
+    applyN.addEventListener('click', () => setN(nInput.value));
+    nInput.addEventListener('keydown', e => {
+      if (e.key === 'Enter') setN(nInput.value);
+    });
+    identityBtn.addEventListener('click', setIdentity);
+    randomBtn.addEventListener('click', setRandomPermutation);
+    clearBtn.addEventListener('click', clearPermutation);
+    
+    if (nextTranspo) {
+      nextTranspo.addEventListener('click', () => {
+        currentTranspoStep += 1;
+        render();
+      });
+    }
+
+    render();
+  </script>
+</body>
+</html>
