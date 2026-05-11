@@ -563,7 +563,6 @@
           <div class="math" id="transpositionsText">—</div>
           <p class="explanation" id="transpositionsExplain">Un cycle (a₁ a₂ … aₖ) peut s'écrire (a₁ aₖ)…(a₁ a₃)(a₁ a₂). Chaque facteur est une transposition.</p>
           <div class="transpo-visual" id="transpoVisual">
-            <div class="composition-strip" id="transpoStrip"></div>
             <div class="mini-mapping" id="transpoMiniMapping">La visualisation apparaîtra quand la permutation sera complète.</div>
             <div class="sequence-title">Séquence complète de composition</div>
             <div class="sequence-list" id="transpoSequence"></div>
@@ -619,7 +618,6 @@
     const signatureText = document.getElementById('signatureText');
     const signatureExplain = document.getElementById('signatureExplain');
     const pedagogyList = document.getElementById('pedagogyList');
-    const transpoStrip = document.getElementById('transpoStrip');
     const transpoMiniMapping = document.getElementById('transpoMiniMapping');
     const transpoSequence = document.getElementById('transpoSequence');
 
@@ -784,14 +782,27 @@
       return transpositions;
     }
 
-    function countInversions() {
-      let inv = 0;
+    function inversionPairs() {
+      const pairs = [];
       for (let i = 0; i < n; i++) {
         for (let j = i + 1; j < n; j++) {
-          if (perm[i] > perm[j]) inv++;
+          if (perm[i] > perm[j]) {
+            pairs.push([i + 1, j + 1, perm[i], perm[j]]);
+          }
         }
       }
-      return inv;
+      return pairs;
+    }
+
+    function countInversions() {
+      return inversionPairs().length;
+    }
+
+    function formatInversionPairs(pairs) {
+      if (!pairs.length) return 'aucune paire inversée';
+      return pairs
+        .map(([i, j, si, sj]) => `(${i},${j}) car σ(${i})=${si} > σ(${j})=${sj}`)
+        .join(' ; ');
     }
 
     function updateResults() {
@@ -822,7 +833,8 @@
       const cycles = cyclesOfPermutation();
       const nonTrivialCycles = cycles.filter(c => c.length > 1);
       const transpositions = transpositionsFromCycles(cycles);
-      const inversions = countInversions();
+      const inversionList = inversionPairs();
+      const inversions = inversionList.length;
       const signature = transpositions.length % 2 === 0 ? 1 : -1;
 
       cyclesText.innerHTML = formatCycles(cycles)
@@ -848,7 +860,7 @@
         : 'L’identité ne nécessite aucune transposition.';
 
       signatureText.innerHTML = `<span class="big-sign ${signature === 1 ? 'positive' : 'negative'}">${signature === 1 ? '+1' : '-1'}</span> &nbsp; car ${transpositions.length} transposition(s) = ${transpositions.length % 2 === 0 ? 'nombre pair' : 'nombre impair'}.`;
-      signatureExplain.textContent = `Vérification par les inversions : la liste des images contient ${inversions} inversion(s), donc (-1)^${inversions} = ${inversions % 2 === 0 ? '+1' : '-1'}.`;
+      signatureExplain.innerHTML = `Vérification par les inversions : la liste des images contient ${inversions} inversion(s), donc (-1)^${inversions} = ${inversions % 2 === 0 ? '+1' : '-1'}.<br><strong>Paires inversées :</strong> ${formatInversionPairs(inversionList)}.`;
       renderTranspositionVisual(transpositions);
 
       const fixed = cycles.filter(c => c.length === 1).map(c => c[0]);
@@ -875,9 +887,7 @@
 
     function renderTranspositionVisual(transpositions) {
       // Sécurité : cette visualisation ne doit jamais bloquer le reste de l'application.
-      if (!transpoStrip || !transpoMiniMapping) return;
-
-      transpoStrip.innerHTML = '';
+      if (!transpoMiniMapping) return;
       if (transpoSequence) transpoSequence.innerHTML = '';
 
       if (!transpositions.length) {
@@ -908,20 +918,8 @@
 
       // Le facteur sélectionné est seulement mis en évidence dans la liste compacte.
 
-      transpositions.forEach((t, index) => {
-        const chip = document.createElement('button');
-        chip.className = 'transpo-chip' + (index === currentTranspoStep ? ' current' : '');
-        chip.textContent = `(${t[0]} ${t[1]})`;
-        chip.title = `Mettre en évidence ce facteur dans la liste`;
-        chip.addEventListener('click', () => {
-          currentTranspoStep = index;
-          render();
-        });
-        transpoStrip.appendChild(chip);
-      });
-
       transpoMiniMapping.innerHTML = `
-        La ligne de boutons rappelle la décomposition compacte. La séquence ci-dessous donne la composition complète dans l'ordre réel d'application : <strong>on part de l'identité et on applique d'abord la transposition la plus à droite</strong>.
+        La séquence ci-dessous donne la composition complète dans l'ordre réel d'application : <strong>on part de l'identité et on applique d'abord la transposition la plus à droite</strong>.
       `;
 
       if (transpoSequence) {
@@ -1088,13 +1086,6 @@
     identityBtn.addEventListener('click', setIdentity);
     randomBtn.addEventListener('click', setRandomPermutation);
     clearBtn.addEventListener('click', clearPermutation);
-    
-    if (nextTranspo) {
-      nextTranspo.addEventListener('click', () => {
-        currentTranspoStep += 1;
-        render();
-      });
-    }
 
     render();
   </script>
