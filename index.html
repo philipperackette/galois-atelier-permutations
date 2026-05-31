@@ -6,213 +6,291 @@
 *{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:#f3f1ea;color:var(--ink)}
 header{background:var(--bg);color:white;padding:18px 24px;border-bottom:5px solid var(--gold)}
 header h1{margin:0;font-size:1.55rem;font-weight:650}header p{margin:.35rem 0 0;opacity:.9}
-main{padding:20px;max-width:960px;margin:0 auto}
+main{padding:20px;max-width:1080px;margin:0 auto}
 .panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;box-shadow:0 2px 10px #0001;margin-bottom:16px}
-.panel h2{margin:.1rem 0 1rem;font-size:1.1rem;color:var(--teal)}
-.controls{display:flex;gap:12px;flex-wrap:wrap;align-items:end;margin-bottom:12px}
+.panel h2{margin:.1rem 0 1rem;font-size:1.08rem;color:var(--teal)}
+.controls{display:flex;gap:12px;flex-wrap:wrap;align-items:end;margin-bottom:10px}
 .control{display:flex;flex-direction:column;gap:4px}
 label{font-weight:600;font-size:.92rem}
 input,select,button{font:inherit;border:1px solid #bbb;border-radius:8px;padding:7px 9px;background:white}
 button{background:var(--teal);color:white;border-color:var(--teal);cursor:pointer}
-button.example{background:#eee;color:#333;border-color:#ccc;font-size:.88rem}
+button.example{background:#eee;color:#333;border-color:#ccc;font-size:.86rem;padding:5px 9px}
 button.example:hover{background:#ddd}
 .note{font-size:.92rem;color:#444;line-height:1.5}
-.small{font-size:.88rem;color:#555}
-.info{border-left:4px solid var(--blue);padding:8px 10px;background:#f5f9ff;margin:8px 0}
-.success{border-left:4px solid var(--teal);padding:8px 10px;background:#f5fffb;margin:8px 0}
-.warn{border-left:4px solid var(--garnet);padding:8px 10px;background:#fff7f7;margin:8px 0}
-.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:1.1rem}
+.small{font-size:.86rem;color:#555}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+.info{border-left:4px solid var(--blue);padding:8px 11px;background:#f5f9ff;margin:8px 0;border-radius:0 6px 6px 0}
+.success{border-left:4px solid var(--teal);padding:8px 11px;background:#f5fffb;margin:8px 0;border-radius:0 6px 6px 0}
+.warn{border-left:4px solid var(--garnet);padding:8px 11px;background:#fff7f7;margin:8px 0;border-radius:0 6px 6px 0}
 .bigbtns{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
 .badge{display:inline-block;border-radius:999px;background:#e8e3d7;padding:2px 10px;margin:3px;font-size:.9rem}
 .badge.ok{background:#d8f1e1;color:var(--teal)}
 .badge.no{background:#f4d5d5;color:var(--garnet)}
+.badge.acc{background:#fdeccd;color:#8a5a00}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-.perm-row{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0;align-items:center}
-.perm-box{display:flex;flex-direction:column;align-items:center;border:1px solid var(--line);border-radius:8px;padding:6px 10px;background:white;min-width:44px}
+@media(max-width:680px){.grid2{grid-template-columns:1fr}}
+.perm-row{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0;align-items:center}
+.perm-box{display:flex;flex-direction:column;align-items:center;border:1px solid var(--line);border-radius:8px;padding:5px 9px;background:white;min-width:40px}
 .perm-box .top{font-weight:700;color:var(--teal)}
-.perm-box .bot{font-size:.85rem;color:var(--garnet)}
-.compose-area{margin-top:12px}
-.arrow{font-size:1.4rem;color:#888;padding:0 4px}
-@media(max-width:600px){.grid2{grid-template-columns:1fr}}
+.perm-box .ar{font-size:.8rem;color:#999}
+.perm-box .bot{font-weight:700;color:var(--garnet)}
+.tabs{display:flex;gap:4px;flex-wrap:wrap;border-bottom:2px solid var(--line);margin-bottom:14px}
+.tab{padding:8px 14px;cursor:pointer;border:none;background:none;color:#666;font-weight:600;border-bottom:3px solid transparent;margin-bottom:-2px}
+.tab.active{color:var(--teal);border-bottom-color:var(--teal)}
+.tabpane{display:none}.tabpane.active{display:block}
+table.cayley{border-collapse:collapse;margin:10px 0;font-size:.92rem}
+table.cayley td,table.cayley th{border:1px solid var(--line);padding:5px 9px;text-align:center;min-width:54px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+table.cayley th{background:#e8e3d7;color:var(--teal);font-weight:700}
+table.cayley td{background:white}
+svg{display:block;max-width:100%;height:auto}
 </style>
 </head><body>
 <header>
   <h1>Atelier permutations</h1>
-  <p>Notation, décomposition en cycles, signature et composition — convention (στ)(x) = σ(τ(x)).</p>
+  <p>Cycles, transpositions, signature, ordre, inverse, puissances, conjugaison et sous-groupe engendré — convention (στ)(x) = σ(τ(x)).</p>
 </header>
 <main>
-<section class="panel">
-  <h2>Entrer une permutation de S_n (n ≤ 9)</h2>
-  <p class="note small">Saisir les images séparées par des espaces. Exemple pour σ = (1 3)(2) dans S₃ : <span class="mono">3 2 1</span>.</p>
-  <div class="controls">
-    <div class="control">
-      <label for="perm">Images σ(1) σ(2) … σ(n)</label>
-      <input id="perm" value="2 3 1" size="30" placeholder="2 3 1">
+
+<div class="tabs">
+  <button class="tab active" data-pane="analyse">Analyser σ</button>
+  <button class="tab" data-pane="composer">Composer σ·τ</button>
+  <button class="tab" data-pane="conjug">Conjuguer τστ⁻¹</button>
+  <button class="tab" data-pane="engendre">Sous-groupe ⟨σ⟩</button>
+</div>
+
+<!-- ============ ANALYSE ============ -->
+<section class="tabpane active" id="analyse">
+  <div class="panel">
+    <h2>Analyser une permutation de Sₙ (n ≤ 9)</h2>
+    <p class="note small">Saisir les images σ(1) σ(2) … σ(n) séparées par des espaces. Exemple pour σ = (1 3) dans S₃ : <span class="mono">3 2 1</span>.</p>
+    <div class="controls">
+      <div class="control">
+        <label for="perm">Images σ(1) σ(2) … σ(n)</label>
+        <input id="perm" value="2 3 1 5 4" size="28">
+      </div>
+      <button id="go">Analyser</button>
     </div>
-    <button id="go">Analyser</button>
+    <div class="bigbtns">
+      <button class="example" data-v="2 1">S₂ : (1 2)</button>
+      <button class="example" data-v="2 3 1">S₃ : (1 2 3)</button>
+      <button class="example" data-v="2 1 3">S₃ : (1 2)</button>
+      <button class="example" data-v="2 3 4 1">S₄ : (1 2 3 4)</button>
+      <button class="example" data-v="2 1 4 3">S₄ : (1 2)(3 4)</button>
+      <button class="example" data-v="3 4 1 2">S₄ : (1 3)(2 4)</button>
+      <button class="example" data-v="2 3 1 5 4">S₅ : (1 2 3)(4 5)</button>
+      <button class="example" data-v="2 3 4 5 6 1">S₆ : 6-cycle</button>
+    </div>
+    <div id="result"></div>
   </div>
-  <div class="bigbtns">
-    <button class="example" data-v="2 1">S₂ : (1 2)</button>
-    <button class="example" data-v="2 3 1">S₃ : (1 2 3)</button>
-    <button class="example" data-v="2 1 3">S₃ : (1 2)</button>
-    <button class="example" data-v="1 3 2">S₃ : (2 3)</button>
-    <button class="example" data-v="3 2 1">S₃ : (1 3)</button>
-    <button class="example" data-v="2 3 4 1">S₄ : (1 2 3 4)</button>
-    <button class="example" data-v="2 1 4 3">S₄ : (1 2)(3 4)</button>
-    <button class="example" data-v="3 4 1 2">S₄ : (1 3)(2 4)</button>
-    <button class="example" data-v="2 3 1 5 4">S₅ : (1 2 3)(4 5)</button>
-  </div>
-  <div id="result"></div>
 </section>
 
-<section class="panel">
-  <h2>Composer deux permutations (convention σ·τ = σ∘τ)</h2>
-  <p class="note small">Saisir deux permutations de même longueur. Le produit σ·τ applique d'abord τ, puis σ.</p>
-  <div class="controls">
-    <div class="control">
-      <label for="sig">σ (images)</label>
-      <input id="sig" value="2 1 3" size="20">
+<!-- ============ COMPOSER ============ -->
+<section class="tabpane" id="composer">
+  <div class="panel">
+    <h2>Composer deux permutations (convention σ·τ = σ∘τ)</h2>
+    <p class="note small">Le produit σ·τ applique d'abord τ, puis σ. On affiche aussi τ·σ pour comparer (commutativité).</p>
+    <div class="controls">
+      <div class="control"><label for="sig">σ (images)</label><input id="sig" value="2 1 3" size="18"></div>
+      <div class="control"><label for="tau">τ (images)</label><input id="tau" value="1 3 2" size="18"></div>
+      <button id="gocomp">Calculer</button>
     </div>
-    <div class="control">
-      <label for="tau">τ (images)</label>
-      <input id="tau" value="1 3 2" size="20">
-    </div>
-    <button id="gocomp">Calculer σ·τ et τ·σ</button>
+    <div id="compResult"></div>
   </div>
-  <div id="compResult"></div>
 </section>
-<div class="linkbar">Applet statique HTML/JS pur — compagnon du chapitre 1.</div>
+
+<!-- ============ CONJUGAISON ============ -->
+<section class="tabpane" id="conjug">
+  <div class="panel">
+    <h2>Conjugaison : calculer τστ⁻¹</h2>
+    <p class="note small">La conjugaison d'un cycle renomme ses éléments : τ(a₁ a₂ … aₖ)τ⁻¹ = (τ(a₁) τ(a₂) … τ(aₖ)). Deux permutations sont conjuguées dans Sₙ si et seulement si elles ont la même structure de cycles.</p>
+    <div class="controls">
+      <div class="control"><label for="cs">σ (images)</label><input id="cs" value="2 3 1" size="18"></div>
+      <div class="control"><label for="ct">τ (images)</label><input id="ct" value="2 1 3" size="18"></div>
+      <button id="goconj">Calculer τστ⁻¹</button>
+    </div>
+    <div id="conjResult"></div>
+  </div>
+</section>
+
+<!-- ============ ENGENDRE ============ -->
+<section class="tabpane" id="engendre">
+  <div class="panel">
+    <h2>Sous-groupe cyclique ⟨σ⟩ engendré par σ</h2>
+    <p class="note small">On calcule σ⁰=e, σ, σ², … jusqu'au retour à l'identité. Le nombre de puissances distinctes est l'ordre de σ.</p>
+    <div class="controls">
+      <div class="control"><label for="es">σ (images)</label><input id="es" value="2 3 4 1" size="18"></div>
+      <button id="goeng">Engendrer ⟨σ⟩</button>
+    </div>
+    <div id="engResult"></div>
+  </div>
+</section>
+
+<div class="small" style="color:#555">Applet statique HTML/JS pur — compagnon du chapitre 1.</div>
 </main>
 <script>
 const $=id=>document.getElementById(id);
 
-function parsePerm(s){
-  return s.trim().split(/\s+/).map(Number);
-}
+// ---- onglets ----
+document.querySelectorAll('.tab').forEach(t=>{
+  t.onclick=()=>{
+    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+    document.querySelectorAll('.tabpane').forEach(x=>x.classList.remove('active'));
+    t.classList.add('active');
+    $(t.dataset.pane).classList.add('active');
+  };
+});
 
+// ---- utilitaires permutations ----
+function parsePerm(s){return s.trim().split(/\s+/).map(Number);}
 function isValid(p){
   const n=p.length;
-  if(p.some(x=>isNaN(x)||x<1||x>n))return false;
-  const seen=new Set(p);
-  return seen.size===n;
+  if(n<1||p.some(x=>isNaN(x)||x<1||x>n))return false;
+  return new Set(p).size===n;
 }
+function identity(n){return Array.from({length:n},(_,i)=>i+1);}
+function compose(s,t){return t.map(x=>s[x-1]);} // (s∘t)(x)=s(t(x))
+function inverse(p){const inv=new Array(p.length);for(let i=0;i<p.length;i++)inv[p[i]-1]=i+1;return inv;}
+function eq(a,b){return a.length===b.length&&a.every((v,i)=>v===b[i]);}
 
-// Decomposition en cycles
 function cycles(perm){
-  const n=perm.length;
-  const visited=new Array(n).fill(false);
-  const cycs=[];
+  const n=perm.length,vis=new Array(n).fill(false),cs=[];
   for(let i=0;i<n;i++){
-    if(visited[i]||perm[i]===i+1){visited[i]=true;continue;}
-    const c=[i+1];
-    let cur=perm[i]-1;
-    while(cur!==i){visited[cur]=true;c.push(cur+1);cur=perm[cur]-1;}
-    visited[i]=true;
-    cycs.push(c);
+    if(vis[i]||perm[i]===i+1){vis[i]=true;continue;}
+    const c=[i+1];let cur=perm[i]-1;
+    while(cur!==i){vis[cur]=true;c.push(cur+1);cur=perm[cur]-1;}
+    vis[i]=true;cs.push(c);
   }
-  return cycs;
+  return cs;
 }
-
-function cycleStr(cycs){
-  if(cycs.length===0)return 'e (identité)';
-  return cycs.map(c=>'('+c.join(' ')+')').join('');
-}
-
-// Decomposition en transpositions : chaque cycle (a1 a2 ... ak) = (a1 ak)...(a1 a2)
-function transpositions(cycs){
-  const trans=[];
-  for(const c of cycs){
-    for(let i=c.length-1;i>=1;i--)trans.push([c[0],c[i]]);
-  }
-  return trans;
-}
-
-// Signature : (-1)^(nombre de transpositions)
-function signature(cycs){
-  let t=0;
-  for(const c of cycs)t+=c.length-1;
-  return t%2===0?1:-1;
-}
-
-function compose(sigma,tau){
-  // (sigma . tau)(x) = sigma(tau(x))
-  return tau.map(x=>sigma[x-1]);
-}
-
-function orderPerm(perm){
-  // ordre = lcm des longueurs de cycles
-  const cycs=cycles(perm);
-  const lens=[...perm.map((_,i)=>perm[i]===i+1?1:0).filter(x=>x)];
-  // tous les points fixes ont longueur 1
-  const allLens=cycs.map(c=>c.length);
-  if(allLens.length===0)return 1;
-  function gcd(a,b){while(b){[a,b]=[b,a%b];}return a;}
-  function lcm(a,b){return a/gcd(a,b)*b;}
-  return allLens.reduce(lcm,1);
-}
+function cycleStr(cs){return cs.length===0?'e':cs.map(c=>'('+c.join(' ')+')').join('');}
+function transpositions(cs){const t=[];for(const c of cs)for(let i=c.length-1;i>=1;i--)t.push([c[0],c[i]]);return t;}
+function signature(cs){let t=0;for(const c of cs)t+=c.length-1;return t%2===0?1:-1;}
+function gcd(a,b){while(b){[a,b]=[b,a%b];}return a;}
+function lcm(a,b){return a/gcd(a,b)*b;}
+function orderPerm(perm){const cs=cycles(perm);const L=cs.map(c=>c.length);return L.length===0?1:L.reduce(lcm,1);}
 
 function renderPerm(perm){
-  const n=perm.length;
-  let html='<div class="perm-row">';
-  for(let i=0;i<n;i++)html+=`<div class="perm-box"><div class="top">${i+1}</div><div class="bot">↓</div><div class="top">${perm[i]}</div></div>`;
-  html+='</div>';
-  return html;
+  let h='<div class="perm-row">';
+  for(let i=0;i<perm.length;i++)h+=`<div class="perm-box"><div class="top">${i+1}</div><div class="ar">↓</div><div class="bot">${perm[i]}</div></div>`;
+  return h+'</div>';
+}
+// Diagramme en arcs (positions sur une ligne, arcs vers l'image)
+function renderArcs(perm){
+  const n=perm.length,W=Math.max(260,n*52),x0=30,dx=(W-60)/(n-1||1),yT=30,yB=110;
+  let s=`<svg viewBox="0 0 ${W} 140" width="${W}" height="140">`;
+  for(let i=0;i<n;i++){
+    const x=x0+i*dx;
+    s+=`<text x="${x}" y="20" text-anchor="middle" font-size="13" font-weight="700" fill="#0f5b55">${i+1}</text>`;
+    s+=`<circle cx="${x}" cy="${yT}" r="4" fill="#0f5b55"/>`;
+    s+=`<circle cx="${x}" cy="${yB}" r="4" fill="#8a1d2c"/>`;
+    s+=`<text x="${x}" y="132" text-anchor="middle" font-size="13" font-weight="700" fill="#8a1d2c">${i+1}</text>`;
+  }
+  for(let i=0;i<n;i++){
+    const x1=x0+i*dx,x2=x0+(perm[i]-1)*dx;
+    const fixed=perm[i]===i+1;
+    s+=`<path d="M${x1},${yT+4} C${x1},${(yT+yB)/2} ${x2},${(yT+yB)/2} ${x2},${yB-4}" fill="none" stroke="${fixed?'#bbb':'#1d4f91'}" stroke-width="${fixed?1:1.8}"/>`;
+  }
+  return s+'</svg>';
 }
 
 function analyze(){
-  const raw=$('perm').value;
-  const p=parsePerm(raw);
-  if(!isValid(p)){$('result').innerHTML='<div class="warn">Permutation invalide. Vérifier que chaque entier de 1 à n apparaît exactement une fois.</div>';return;}
-  const n=p.length;
-  const cycs=cycles(p);
-  const trans=transpositions(cycs);
-  const sgn=signature(cycs);
-  const ord=orderPerm(p);
+  const p=parsePerm($('perm').value);
+  if(!isValid(p)){$('result').innerHTML='<div class="warn">Permutation invalide : chaque entier de 1 à n doit apparaître une fois.</div>';return;}
+  const cs=cycles(p),tr=transpositions(cs),sgn=signature(cs),ord=orderPerm(p);
+  const cycleLengths=cs.map(c=>c.length).sort((a,b)=>b-a);
+  const nfixed=p.filter((v,i)=>v===i+1).length;
 
-  let html=renderPerm(p);
-  html+=`<div class="info"><b>Notation en cycles :</b> <span class="mono">${cycleStr(cycs)}</span></div>`;
-  if(trans.length>0){
-    html+=`<div class="info"><b>Décomposition en transpositions :</b> <span class="mono">`;
-    html+=trans.map(([a,b])=>`(${a} ${b})`).join('');
-    html+=`</span> (${trans.length} transposition${trans.length>1?'s':''})</div>`;
+  let h=renderPerm(p);
+  h+=renderArcs(p);
+  h+=`<div class="info"><b>Notation en cycles :</b> <span class="mono">${cycleStr(cs)}</span>`;
+  if(cs.length>0)h+=`  <span class="small">(type : ${cycleLengths.join('+')}${nfixed?'  + '+nfixed+' point'+(nfixed>1?'s':'')+' fixe'+(nfixed>1?'s':''):''})</span>`;
+  h+=`</div>`;
+  if(tr.length>0){
+    h+=`<div class="info"><b>Décomposition en transpositions :</b> <span class="mono">${tr.map(([a,b])=>`(${a} ${b})`).join('')}</span> <span class="small">(${tr.length} transposition${tr.length>1?'s':''})</span></div>`;
   }
-  html+=`<div class="${sgn===1?'success':'warn'}">`;
-  html+=`<b>Signature :</b> ${sgn===1?'+1 (permutation paire)':'-1 (permutation impaire)'}`;
-  html+=` — <b>Ordre :</b> ${ord}`;
-  html+='</div>';
-
-  $('result').innerHTML=html;
+  const invP=inverse(p);
+  h+=`<div class="info"><b>Inverse σ⁻¹ :</b> images <span class="mono">${invP.join(' ')}</span> = <span class="mono">${cycleStr(cycles(invP))}</span></div>`;
+  h+=`<div class="${sgn===1?'success':'warn'}"><b>Signature ε(σ) :</b> ${sgn===1?'+1 (paire)':'−1 (impaire)'} `;
+  h+=`&nbsp;|&nbsp; <b>Ordre :</b> ${ord} `;
+  h+=`<span class="small">(= ppcm des longueurs de cycles${cycleLengths.length?' : ppcm('+cycleLengths.join(',')+')='+ord:''})</span></div>`;
+  $('result').innerHTML=h;
 }
 
 function computeComp(){
-  const s=parsePerm($('sig').value);
-  const t=parsePerm($('tau').value);
-  if(!isValid(s)||!isValid(t)||s.length!==t.length){
-    $('compResult').innerHTML='<div class="warn">Permutations invalides ou de longueurs différentes.</div>';return;
-  }
-  const st=compose(s,t); // σ∘τ : appliquer τ puis σ
-  const ts=compose(t,s);
+  const s=parsePerm($('sig').value),t=parsePerm($('tau').value);
+  if(!isValid(s)||!isValid(t)||s.length!==t.length){$('compResult').innerHTML='<div class="warn">Permutations invalides ou de longueurs différentes.</div>';return;}
+  const st=compose(s,t),ts=compose(t,s);
+  let h='<div class="grid2">';
+  h+=`<div><b>σ·τ</b> <span class="small">(τ puis σ)</span>${renderPerm(st)}<div class="mono">${cycleStr(cycles(st))}</div><div class="small">signature ${signature(cycles(st))===1?'+1':'−1'}, ordre ${orderPerm(st)}</div></div>`;
+  h+=`<div><b>τ·σ</b> <span class="small">(σ puis τ)</span>${renderPerm(ts)}<div class="mono">${cycleStr(cycles(ts))}</div><div class="small">signature ${signature(cycles(ts))===1?'+1':'−1'}, ordre ${orderPerm(ts)}</div></div>`;
+  h+='</div>';
+  h+=eq(st,ts)?'<div class="success">σ·τ = τ·σ : ces deux permutations commutent.</div>'
+             :'<div class="warn">σ·τ ≠ τ·σ : elles ne commutent pas (Sₙ n\u2019est pas abélien pour n ≥ 3).</div>';
+  $('compResult').innerHTML=h;
+}
 
-  let html='<div class="grid2">';
-  html+=`<div><b>σ·τ</b> (appliquer τ d'abord, puis σ)</div>`;
-  html+=`<div><b>τ·σ</b> (appliquer σ d'abord, puis τ)</div>`;
-  html+=`<div>${renderPerm(st)}<div class="mono">${cycleStr(cycles(st))}</div></div>`;
-  html+=`<div>${renderPerm(ts)}<div class="mono">${cycleStr(cycles(ts))}</div></div>`;
-  html+='</div>';
-  if(st.every((v,i)=>v===ts[i])){
-    html+='<div class="success">σ·τ = τ·σ : ces deux permutations commutent.</div>';
-  }else{
-    html+='<div class="warn">σ·τ ≠ τ·σ : ces deux permutations ne commutent pas.</div>';
+function computeConj(){
+  const s=parsePerm($('cs').value),t=parsePerm($('ct').value);
+  if(!isValid(s)||!isValid(t)||s.length!==t.length){$('conjResult').innerHTML='<div class="warn">Permutations invalides ou de longueurs différentes.</div>';return;}
+  const ti=inverse(t);
+  const conj=compose(compose(t,s),ti); // τ σ τ⁻¹
+  const csS=cycles(s),csC=cycles(conj);
+  let h='';
+  h+=`<div class="info"><b>σ =</b> <span class="mono">${cycleStr(csS)}</span> &nbsp; <b>τ =</b> <span class="mono">${cycleStr(cycles(t))}</span></div>`;
+  h+=`<div class="success"><b>τστ⁻¹ =</b> <span class="mono">${cycleStr(csC)}</span> (images <span class="mono">${conj.join(' ')}</span>)</div>`;
+  // vérification structure de cycles identique
+  const typeS=csS.map(c=>c.length).sort((a,b)=>b-a).join('+');
+  const typeC=csC.map(c=>c.length).sort((a,b)=>b-a).join('+');
+  h+=`<div class="info"><b>Vérification :</b> σ a le type de cycles ${typeS||'(identité)'}, τστ⁻¹ a le type ${typeC||'(identité)'}. `;
+  h+=(typeS===typeC?'Identiques ✓ — la conjugaison préserve la structure de cycles, comme attendu.':'Différents (anomalie).')+`</div>`;
+  // illustration : renommage explicite cycle par cycle
+  if(csS.length){
+    h+=`<div class="info small"><b>Renommage par τ :</b><br>`;
+    h+=csS.map(c=>`(${c.join(' ')}) ↦ (${c.map(x=>t[x-1]).join(' ')})`).join('<br>');
+    h+=`</div>`;
   }
-  $('compResult').innerHTML=html;
+  $('conjResult').innerHTML=h;
+}
+
+function computeEng(){
+  const s=parsePerm($('es').value);
+  if(!isValid(s)){$('engResult').innerHTML='<div class="warn">Permutation invalide.</div>';return;}
+  const n=s.length,e=identity(n);
+  const powers=[e.slice()];let cur=e.slice();
+  for(let k=1;k<=orderPerm(s)+1;k++){cur=compose(s,cur);if(eq(cur,e))break;powers.push(cur.slice());}
+  const ord=powers.length;
+  let h=`<div class="info"><b>⟨σ⟩ est cyclique d'ordre ${ord}.</b> Ses éléments :</div>`;
+  // liste des puissances
+  h+='<div style="overflow-x:auto"><table class="cayley"><tr><th>k</th>';
+  for(let k=0;k<ord;k++)h+=`<th>σ<sup>${k}</sup></th>`;
+  h+='</tr><tr><th>en cycles</th>';
+  for(let k=0;k<ord;k++)h+=`<td>${cycleStr(cycles(powers[k]))}</td>`;
+  h+='</tr><tr><th>ordre élt</th>';
+  for(let k=0;k<ord;k++)h+=`<td>${orderPerm(powers[k])}</td>`;
+  h+='</tr></table></div>';
+  // table de Cayley de <σ>
+  if(ord<=12){
+    h+=`<div class="small" style="margin-top:10px"><b>Table de Cayley de ⟨σ⟩ (isomorphe à ℤ/${ord}ℤ) :</b></div>`;
+    h+='<div style="overflow-x:auto"><table class="cayley"><tr><th>·</th>';
+    for(let j=0;j<ord;j++)h+=`<th>σ<sup>${j}</sup></th>`;
+    h+='</tr>';
+    for(let i=0;i<ord;i++){
+      h+=`<tr><th>σ<sup>${i}</sup></th>`;
+      for(let j=0;j<ord;j++)h+=`<td>σ<sup>${(i+j)%ord}</sup></td>`;
+      h+='</tr>';
+    }
+    h+='</table></div>';
+  }
+  $('engResult').innerHTML=h;
 }
 
 $('go').onclick=analyze;
 $('perm').addEventListener('keydown',e=>{if(e.key==='Enter')analyze();});
+document.querySelectorAll('button.example').forEach(b=>b.onclick=()=>{$('perm').value=b.dataset.v;analyze();});
 $('gocomp').onclick=computeComp;
-document.querySelectorAll('button.example').forEach(btn=>{
-  btn.onclick=()=>{$('perm').value=btn.dataset.v;analyze();};
-});
-analyze();
+$('goconj').onclick=computeConj;
+$('goeng').onclick=computeEng;
+
+analyze();computeComp();computeConj();computeEng();
 </script>
 </body></html>
